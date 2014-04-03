@@ -187,28 +187,29 @@ daisyProgram.Execute(initialScopeValue).Result;
 ```
 
 ###Context
-Some rules may require more input than a single scope value. Context allows sending more values. Pass it in as the second value of the execute method, and statement methods can access via the inherited Context property.
+Some rules may require more input than a single scope value. Context allows sending more values via a ContextBundle, which is essentially a Dictionary. Pass it in as the second value of the execute method, and statement methods can access via the inherited Context property.
 ```C#
-var context = new Family();
+var context = new ContextBundle();
+context["family"] = new Family();
 DaisyCompiler.Compile<Person>(myRule,myStatementSet)
     .Execute(new Person(), context);
     
 public class PersonController : StatementController<Person> {
   public void IsInFamily() {
-    return Context.IsMember(Scope);
+    return Context.Get<Family>("family").IsMember(Scope);
   }
 }
 ```
 
 ###Attachments
-Some rules may require more output that just a boolean. Attachments allow returning more values. Statements may set anything on an attachment object (an ExpandoObject) and the results are available in the excution.
+Some rules may require more output that just a boolean. Attachments allow returning more values. Statements may add results to the Attachments object (essentially a Dictionary) and the results are available in the excution.
 ```C#
     
 public class WidgetSetController : StatementController<WidgetSet> {
   public void AnyWidget(Func<Widget,bool> proceed) {
     foreach(var widget in Scope) {
       if(proceed(widget)) {
-        Attachments.selected = widget;
+        Attachments["selected"] = widget;
         return true;
       }
     }
@@ -223,7 +224,7 @@ var execution = DaisyCompiler.Compile<Widger>.Compile(
   OR Is Expired", myStatementSet)
 .Execute()
 
-var selectedWidget = execution.Attachments.selected;
+var selectedWidget = execution.Attachments.Get<Widget>("selected");
 ```
 
 
