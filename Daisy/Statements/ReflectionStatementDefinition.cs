@@ -130,6 +130,7 @@ namespace Ancestry.Daisy.Statements
                     mappedParameters :
                     mappedParameters.Select(x => x == proceedHolder ?  transformsToValueType ? scopeConverter(context.Proceed) : context.Proceed : x)
                     .ToArray();
+                context.PerformanceCounter.Count(context,definition);
                 return Execute(controllerInstance, methodParams);
             }
 

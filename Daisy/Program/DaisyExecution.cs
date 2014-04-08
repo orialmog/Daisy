@@ -23,10 +23,10 @@ namespace Ancestry.Daisy.Program
 
         public ContextBundle Attachments { get; private set; }
 
-        internal DaisyExecution(DaisyAst ast)
+        internal DaisyExecution(DaisyAst ast, DaisyMode mode)
         {
             Attachments = new ContextBundle();
-            DebugInfo = new ExecutionDebugInfo(ast);
+            DebugInfo = new ExecutionDebugInfo(ast,mode);
         }
     }
 }

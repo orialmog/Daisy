@@ -1,2 +1,2 @@
 Has account
-    NOT has transactions
+    NOT has transaction

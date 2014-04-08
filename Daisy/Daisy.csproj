@@ -74,6 +74,7 @@
     <Compile Include="Program\ExecutionDebugInfo.cs" />
     <Compile Include="Program\DaisyExecution.cs" />
     <Compile Include="Program\ExecutionResultType.cs" />
+    <Compile Include="Program\PerformanceCounter.cs" />
     <Compile Include="Program\Tracer.cs" />
     <Compile Include="Statements\StatementParameter.cs" />
     <Compile Include="Statements\TitleAttribute.cs" />

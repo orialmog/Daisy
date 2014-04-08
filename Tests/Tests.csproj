@@ -93,6 +93,7 @@
     <Compile Include="Daisy\Component\TracingTest.cs" />
     <Compile Include="Daisy\Performance\ExecutionPerformanceTest.cs" />
     <Compile Include="Daisy\Performance\ReflectionStatementHandlerTest.cs" />
+    <Compile Include="Daisy\Unit\Program\PerformanceMeasurementsTest.cs" />
     <Compile Include="Documentor\Component\DocumentorTests.cs" />
     <Compile Include="Documentor\Unit\CommentDocumentationTest.cs" />
     <Compile Include="Documentor\Unit\Utils\MethodInfoExtentionsTests.cs" />

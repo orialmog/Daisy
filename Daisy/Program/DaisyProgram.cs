@@ -28,10 +28,12 @@ namespace Ancestry.Daisy.Program
 
         public IDaisyExecution Execute(T scope, ContextBundle context)
         {
-            var execution = new DaisyExecution(ast);
+            var execution = new DaisyExecution(ast, Mode);
+            execution.DebugInfo.PerformanceCounter.Start();
             var traced = Execute(scope, ast.Root, execution, context);
             execution.Outcome = traced.Outcome;
             execution.DebugInfo.Trace = traced;
+            execution.DebugInfo.PerformanceCounter.End();
             return execution;
         }
 
@@ -43,6 +45,7 @@ namespace Ancestry.Daisy.Program
 
         private TraceNode Execute(object scope, IDaisyAstNode node, DaisyExecution daisyExecution, ContextBundle context)
         {
+            daisyExecution.DebugInfo.PerformanceCounter.CountOp();
             if(node is AndOperatorNode)
             {
                 var and = node as AndOperatorNode;
@@ -84,7 +87,8 @@ namespace Ancestry.Daisy.Program
                         },
                         Context = context,
                         Attachments = daisyExecution.Attachments,
-                        Tracer = tracer
+                        Tracer = tracer,
+                        PerformanceCounter = daisyExecution.DebugInfo.PerformanceCounter
                     });
                     return new GroupOperatorTrace(group.Text, tracer.Tracings, frames,scope, result);
                 } else
@@ -101,10 +105,11 @@ namespace Ancestry.Daisy.Program
                 var tracer = BuildTracer();
                 var result = link.Execute(new InvokationContext() {
                         Scope = scope,
-                        Proceed = o => false,  //I don't know. False since there are no children?
+                        Proceed = o => true,  //I don't know. True since the empty statement is true?
                         Context = context,
                         Attachments = daisyExecution.Attachments,
-                        Tracer = tracer
+                        Tracer = tracer,
+                        PerformanceCounter = daisyExecution.DebugInfo.PerformanceCounter
                     });
                 return new StatementTrace(statement.Text,tracer.Tracings, scope, result);
             }
