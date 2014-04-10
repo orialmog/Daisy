@@ -18,7 +18,6 @@ namespace Ancestry.Daisy.Statements
             private MemberSetter delegateForScopeSetter;
             private MemberSetter delegateForTracerSetter;
             private MethodInvoker delegateForInvokation;
-            private object controllerInstance;
             private StaticAnalysis.TransformPredicate scopeConverter;
             public string Statement { get; private set; }
 
@@ -113,7 +112,6 @@ namespace Ancestry.Daisy.Statements
                 delegateForAttachmentsSetter = controllerType.DelegateForSetPropertyValue("Attachments");
                 delegateForTracerSetter = controllerType.DelegateForSetPropertyValue("Tracer");
                 delegateForInvokation = definition.MethodInfo.DelegateForCallMethod();
-                controllerInstance = CreateController();
                 if (definition.TransformsScopeTo != null)
                 {
                     scopeConverter = StaticAnalysis.CreateConverter(definition.TransformsScopeTo);
@@ -125,6 +123,7 @@ namespace Ancestry.Daisy.Statements
 
             public bool Execute(InvokationContext context)
             {
+                var controllerInstance = CreateController();
                 InitializeController(controllerInstance,context);
                 var methodParams = Definition.TransformsScopeTo == null ?
                     mappedParameters :

@@ -61,6 +61,13 @@ namespace Ancestry.Daisy.Tests.Daisy.Unit.Statements
             {
                 return value == null;
             }
+
+            public bool R8()
+            {
+                Attachments["controller"] = this;
+                return true;
+            }
+
         }
 
         [TestCase("R1","R1",Result = true)]
@@ -93,6 +100,30 @@ namespace Ancestry.Daisy.Tests.Daisy.Unit.Statements
                     Scope = scope,
                     Context = new ContextBundle(),
                 });
+        }
+
+        [Test]
+        public void ItDoesNotReUseControllers()
+        {
+            var load = new ReflectionStatementDefinition(GetMethod("R8"), typeof (TestStatements));
+            var linked = load.Link("R8");
+            var att1 = new ContextBundle();
+            var att2 = new ContextBundle();
+
+            linked.Execute(new InvokationContext() {
+                Scope = 9,
+                Attachments = att1
+            });
+
+            linked.Execute(new InvokationContext() {
+                Scope = 9,
+                Attachments = att2
+            });
+
+            var ctr1 = att1.Get<TestStatements>("controller");
+            var ctr2 = att2.Get<TestStatements>("controller");
+
+            Assert.AreNotSame(ctr1,ctr2);
         }
 
         [TestCase("R1", "R1", "1,2,3,4", 2, Result = true, TestName = "It returns result of statment")]
