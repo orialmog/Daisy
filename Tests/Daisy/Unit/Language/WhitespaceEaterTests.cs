@@ -9,6 +9,7 @@
     {
         [TestCase("a",Result = 0)]
         [TestCase("  a",Result = 1)]
+        [TestCase("    a",Result = 1)]
         [TestCase("\ta",Result = 1)]
         public int ItCountsIndents(string line)
         {
@@ -33,13 +34,26 @@
         [TestCase("  ","    a","  b",Result = -1)]
         [TestCase("\t","\ta","\t\tb",Result = 1)]
         [TestCase("\t","\t\ta","\tb",Result = -1)]
-        [TestCase("\t","\t\t\ta","\tb",Result = -2)]
+        [TestCase("\t;\t\t","\t\t\ta","\tb",Result = -2)]
         public int ItCountsDeltaIndentsDivibleByLearnedIndentsPerLine(string whitespaceTrainer,string previous, string line)
         {
             var sut = new WhitespaceEater();
-            sut.Eat(whitespaceTrainer, 0);
-            sut.Eat(previous, 1);
-            return sut.Eat(line, 2).DeltaIndents;
+            var lineCnt = 1;
+            foreach(var trainer in whitespaceTrainer.Split(';'))
+            {
+                sut.Eat(trainer, lineCnt++);
+            }
+            sut.Eat(previous, lineCnt++);
+            return sut.Eat(line, lineCnt++).DeltaIndents;
+        }
+
+        [Test]
+        public void ItDoesNotAllowMoreThanOneTabbingLevelIncreaseAtATime()
+        {
+            var sut = new WhitespaceEater();
+            sut.Eat("\t", 0);
+            sut.Eat("a", 1);
+            Assert.Catch<InconsistentWhitespaceException>(() => sut.Eat("\t\tb", 2));
         }
 
         [TestCase("\t","\t\tb",Result = 2)]

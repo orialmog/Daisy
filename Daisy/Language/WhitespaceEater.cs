@@ -84,7 +84,7 @@ namespace Ancestry.Daisy.Language
             }
             else if (whitespaceType != trim.WhitespaceType && trim.WhitespaceType != 'a')
             {
-                throw new InconsistentWhitespaceException(string.Format("Some lines start with spaces, and use tabs"));
+                throw new InconsistentWhitespaceException(string.Format("Some lines start with spaces, and some start with tabs"));
             }
             var indents = Indents(trim.Trimmed, lineCnt);
             var back = new WhitespaceMorsel() {
@@ -92,6 +92,8 @@ namespace Ancestry.Daisy.Language
                 Indents = indents,
                 DeltaIndents = indents - openIndents
             };
+            if(back.DeltaIndents > 1) 
+                throw new InconsistentWhitespaceException(string.Format("Line {0} increases too many tabbing levels at once.",lineCnt));
             openIndents = indents;
             return back;
         }
