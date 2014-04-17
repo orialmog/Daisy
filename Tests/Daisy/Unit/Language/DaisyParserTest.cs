@@ -9,7 +9,7 @@
     using NUnit.Framework;
 
     [TestFixture,Category("Unit")]
-    public class ParserTest
+    public class DaisyParserTest
     {
         [TestCase("a\nAND b","AND\r\n-a\r\n-b\r\n",TestName = "It parses ands")]
         [TestCase("a\nOR b","OR\r\n-a\r\n-b\r\n",TestName = "It parses ors")]
@@ -44,6 +44,13 @@ AND d
   b",
             "GROUP@a\r\n-b\r\n",
             TestName = "It parses groups")]
+        [TestCase( @"
+a
+  b
+    c
+    d",
+            "GROUP@a\r\n-GROUP@b\r\n--AND\r\n---c\r\n---d\r\n",
+            TestName = "It parses groups in groups")]
         public void ItParsesLanguages(string code, string expectedTree)
         {
             var llstream = new LookAheadStream<Token>(new Lexer(code.ToStream()).Lex());
@@ -58,6 +65,26 @@ AND d
                 Console.WriteLine(actualTree);
             }
             Assert.AreEqual(expectedTree, actualTree);
+        }
+
+        [TestCase("AND a")]
+        [TestCase("a\r\nAND")]
+        [TestCase("a\r\nAND\r\nb")]
+        [TestCase("a\r\nAND NOT\r\nb")]
+        public void ItDiesOnIllegalStatements(string code)
+        {
+            var llstream = new LookAheadStream<Token>(new Lexer(code.ToStream()).Lex());
+            var parser = new DaisyParser(llstream);
+            try
+            {
+                parser.Parse();
+            }
+            catch (Exception e)
+            {
+                //throw;
+                return;
+            }
+            Assert.Fail("Expected " + code + " to not parse");
         }
     }
 }

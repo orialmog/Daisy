@@ -80,13 +80,17 @@
             AssertTokenStreamEquals(stream, new []
                 {
                     new Token() { Kind = TokenKind.Statement, Value = "a"},
+                    new Token() { Kind = TokenKind.EOL},
                     new Token() { Kind = TokenKind.StartGroup },
                     new Token() { Kind = TokenKind.Statement, Value = "b"},
+                    new Token() { Kind = TokenKind.EOL},
                     new Token() { Kind = TokenKind.StartGroup },
                     new Token() { Kind = TokenKind.Statement, Value = "c"},
+                    new Token() { Kind = TokenKind.EOL},
                     new Token() { Kind = TokenKind.EndGroup },
                     new Token() { Kind = TokenKind.EndGroup },
                     new Token() { Kind = TokenKind.Statement, Value = "d"},
+                    new Token() { Kind = TokenKind.EOL},
                     new Token() { Kind = TokenKind.EOF},
                 });
         }
@@ -104,6 +108,20 @@
                 new TestCaseData("a",new []
                     {
                         new Token(){Kind = TokenKind.Statement, Value = "a"},
+                        new Token() { Kind = TokenKind.EOL},
+                        new Token(){Kind = TokenKind.EOF},
+                    }),
+                new TestCaseData(@"a
+b
+
+c",new []
+                    {
+                        new Token(){Kind = TokenKind.Statement, Value = "a"},
+                        new Token() { Kind = TokenKind.EOL},
+                        new Token(){Kind = TokenKind.Statement, Value = "b"},
+                        new Token() { Kind = TokenKind.EOL},
+                        new Token(){Kind = TokenKind.Statement, Value = "c"},
+                        new Token() { Kind = TokenKind.EOL},
                         new Token(){Kind = TokenKind.EOF},
                     }),
                 new TestCaseData(@"a
@@ -111,18 +129,23 @@
 c",new []
                     {
                         new Token(){Kind = TokenKind.Statement, Value = "a"},
+                        new Token() { Kind = TokenKind.EOL},
                         new Token(){Kind = TokenKind.StartGroup},
                         new Token(){Kind = TokenKind.Statement, Value = "b"},
+                        new Token() { Kind = TokenKind.EOL},
                         new Token(){Kind = TokenKind.EndGroup},
                         new Token(){Kind = TokenKind.Statement, Value = "c"},
+                        new Token() { Kind = TokenKind.EOL},
                         new Token(){Kind = TokenKind.EOF},
                     }),
                 new TestCaseData(@"a
   b",new []
                     {
                         new Token(){Kind = TokenKind.Statement, Value = "a"},
+                        new Token() { Kind = TokenKind.EOL},
                         new Token(){Kind = TokenKind.StartGroup},
                         new Token(){Kind = TokenKind.Statement, Value = "b"},
+                        new Token() { Kind = TokenKind.EOL},
                         new Token(){Kind = TokenKind.EndGroup},
                         new Token(){Kind = TokenKind.EOF},
                     }),
@@ -132,8 +155,10 @@ c",new []
   //Comment 3",new []
                     {
                         new Token(){Kind = TokenKind.Statement, Value = "a"},
+                        new Token() { Kind = TokenKind.EOL},
                         new Token(){Kind = TokenKind.StartGroup},
                         new Token(){Kind = TokenKind.Statement, Value = "b"},
+                        new Token() { Kind = TokenKind.EOL},
                         new Token(){Kind = TokenKind.EndGroup},
                         new Token(){Kind = TokenKind.EOF},
                     }),

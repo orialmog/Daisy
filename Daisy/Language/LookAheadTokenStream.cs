@@ -1,16 +1,17 @@
-﻿namespace Ancestry.Daisy.Language
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
-    public class LookAheadStream<T> : IEnumerable<T> , IEnumerator<T>
+namespace Ancestry.Daisy.Language
+{
+    public class LookAheadStream<T> : IEnumerable<T>, IEnumerator<T>
     {
         private LinkedList<T> stored = new LinkedList<T>(); //The first value of the array is the current
         private IEnumerator<T> enumerator;
 
         private bool hasCurrent;
+        private bool eof;
         private T current;
 
         public LookAheadStream(IEnumerable<T> stream)
@@ -29,29 +30,32 @@
         {
             if (lookTo < 0) throw new ArgumentOutOfRangeException("lookTo");
             if (lookTo == 0) return new Peek() { HasCharactersUpTo = hasCurrent, Value = current };
-            if(stored.Count >= lookTo)
+            if (stored.Count >= lookTo)
             {
-                return new Peek(){
-                    HasCharactersUpTo = true, 
-                    Value  = stored.ElementAt(lookTo-1)
+                return new Peek()
+                {
+                    HasCharactersUpTo = true,
+                    Value = stored.ElementAt(lookTo - 1)
                 };
             }
             var needToFastForward = lookTo - stored.Count;
-            for(;needToFastForward > 0; --needToFastForward)
+            for (; needToFastForward > 0; --needToFastForward)
             {
-                if(!enumerator.MoveNext())
+                if (!enumerator.MoveNext())
                 {
-                    return new Peek() {
-                            HasCharactersUpTo = false,
-                            Value = default(T)
-                        };
+                    return new Peek()
+                    {
+                        HasCharactersUpTo = false,
+                        Value = default(T)
+                    };
                 }
                 stored.AddLast(enumerator.Current);
             }
-            return new Peek() {
-                    HasCharactersUpTo = true,
-                    Value = stored.LastOrDefault()
-                };
+            return new Peek()
+            {
+                HasCharactersUpTo = true,
+                Value = stored.LastOrDefault()
+            };
         }
 
         /// <summary>
@@ -65,6 +69,8 @@
         {
             return this;
         }
+
+        public bool IsEOF { get { return eof; } }
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -96,7 +102,7 @@
         /// <exception cref="T:System.InvalidOperationException">The collection was modified after the enumerator was created. </exception><filterpriority>2</filterpriority>
         public bool MoveNext()
         {
-            if(stored.Any())
+            if (stored.Any())
             {
                 current = stored.First.Value;
                 stored.RemoveFirst();
@@ -106,6 +112,7 @@
             {
                 var hasNext = enumerator.MoveNext();
                 if (hasNext) current = enumerator.Current;
+                eof = !hasNext;
                 return hasNext;
             }
 

@@ -1,4 +1,7 @@
-﻿namespace Ancestry.Daisy.Language
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Ancestry.Daisy.Language
 {
     using Ancestry.Daisy.Language.AST;
     using Ancestry.Daisy.Utils;
@@ -81,15 +84,19 @@
 
         private IDaisyAstNode ParsePredicate()
         {
-            if(tokenStream.Current.Kind == TokenKind.StartGroup) //Anonymous group
+            if(IsOn(TokenKind.EOL) && LookAhead(1,TokenKind.StartGroup)) //Anonymous group
             {
+                MoveNextGuaranteed();
                 return ParseGroup(null);
             }
             var statement =  ParseStatement();
-            if(tokenStream.Current.Kind == TokenKind.StartGroup) //Named group
+            if(IsOn(TokenKind.EOL) && LookAhead(1,TokenKind.StartGroup)) //Named group
             {
+                MoveNextGuaranteed();
                 return ParseGroup(statement);
             }
+            AssertHasType(TokenKind.EOL);
+            tokenStream.MoveNext();
             return statement;
         }
 
@@ -123,6 +130,23 @@
         private void MoveNextGuaranteed()
         {
             if(!tokenStream.MoveNext()) { throw new UnexpectedEndOfStreamException(); }
+        }
+
+        private bool IsOn(params TokenKind[] kinds)
+        {
+            return IsOn((IEnumerable<TokenKind>)kinds);
+        }
+
+        private bool IsOn(IEnumerable<TokenKind> kinds)
+        {
+            return !tokenStream.IsEOF && kinds.Any(x => tokenStream.Current.Kind == x);
+        }
+
+        private bool LookAhead(int lookTo, TokenKind expected)
+        {
+            var ll = tokenStream.LookAhead(lookTo);
+            if (!ll.HasCharactersUpTo) return false;
+            return ll.Value.Kind == expected;
         }
 
         public static DaisyAst Parse(string code)
