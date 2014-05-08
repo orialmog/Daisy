@@ -71,11 +71,14 @@
             var tokens = lexer.InterpretLine(line).ToArray();
             AssertTokenStreamEquals(expected.ToArray(), tokens);
         }
-
         [Test]
         public void ItLexesMultpleCloseEndGroups()
         {
-            var lexer = new Lexer("a\n\tb\n\t\tc\nd".ToStream());
+            var lexer = new Lexer(
+@"a
+    b
+        c
+d".ToStream());
             var stream = lexer.Lex().ToArray();
             AssertTokenStreamEquals(stream, new []
                 {
@@ -111,7 +114,8 @@
                         new Token() { Kind = TokenKind.EOL},
                         new Token(){Kind = TokenKind.EOF},
                     }),
-                new TestCaseData(@"a
+                new TestCaseData(
+@"a
 b
 
 c",new []
@@ -124,7 +128,9 @@ c",new []
                         new Token() { Kind = TokenKind.EOL},
                         new Token(){Kind = TokenKind.EOF},
                     }),
-                new TestCaseData(@"a
+                new TestCaseData
+                    (
+@"a
   b
 c",new []
                     {
@@ -138,7 +144,8 @@ c",new []
                         new Token() { Kind = TokenKind.EOL},
                         new Token(){Kind = TokenKind.EOF},
                     }),
-                new TestCaseData(@"a
+                new TestCaseData(
+@"a
   b",new []
                     {
                         new Token(){Kind = TokenKind.Statement, Value = "a"},
@@ -149,7 +156,8 @@ c",new []
                         new Token(){Kind = TokenKind.EndGroup},
                         new Token(){Kind = TokenKind.EOF},
                     }),
-                new TestCaseData(@"a
+                new TestCaseData(
+@"a
 //This is a comment
   b //Comment 2
   //Comment 3",new []

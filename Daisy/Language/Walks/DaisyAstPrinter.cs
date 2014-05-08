@@ -20,12 +20,15 @@
         public string Print()
         {
             Walk();
-            return sb.ToString();
+            return sb.ToString().Trim();
         }
+
+        private bool VisitingNot = false;
 
         protected override bool PreVisit(IAndOperatorNode<IDaisyAstNode> node)
         {
-            Pad(sb, indent); sb.Append("AND\r\n");
+            sb.Append("\n");
+            Pad(sb, indent); sb.Append("(AND");
             indent++;
             return true;
         }
@@ -33,11 +36,13 @@
         protected override void PostVisit(IAndOperatorNode<IDaisyAstNode> node)
         {
             indent--;
+            sb.Append(")");
         }
 
         protected override bool PreVisit(IOrOperatorNode<IDaisyAstNode> node)
         {
-            Pad(sb, indent); sb.Append("OR\r\n");
+            sb.Append("\n");
+            Pad(sb, indent); sb.Append("(OR");
             indent++;
             return true;
         }
@@ -45,37 +50,46 @@
         protected override void PostVisit(IOrOperatorNode<IDaisyAstNode> node)
         {
             indent--;
+            sb.Append(")");
         }
 
         protected override bool PreVisit(INotOperatorNode<IDaisyAstNode> node)
         {
-            Pad(sb, indent); sb.Append("NOT\r\n");
+            VisitingNot = true;
+            sb.Append("\n");
+            Pad(sb, indent); sb.Append("(NOT ");
             indent++;
             return true;
         }
 
         protected override void PostVisit(INotOperatorNode<IDaisyAstNode> node)
         {
+            VisitingNot = false;
             indent--;
+            sb.Append(")");
         }
 
         protected override void Visit(IStatementNode node)
         {
-            Pad(sb, indent);
+            if(!VisitingNot)
+            {
+                sb.Append("\n");
+                Pad(sb, indent);
+            }
             sb.Append(node.Text);
-            sb.Append("\r\n");
         }
 
         protected override bool PreVisit(IGroupOperatorNode<IDaisyAstNode> node)
         {
+            sb.Append("\n");
             Pad(sb, indent);
-            sb.Append("GROUP");
-            if(!string.IsNullOrEmpty(node.Text))
+            sb.Append("(GROUP");
+            if(node.Text != null)
             {
-                sb.Append("@");
+                sb.Append(" ");
                 sb.Append(node.Text);
             }
-            sb.Append("\r\n");
+                
             indent++;
             return true;
         }
@@ -83,13 +97,14 @@
         protected override void PostVisit(IGroupOperatorNode<IDaisyAstNode> node)
         {
             indent--;
+            sb.Append(")");
         }
 
         private static void Pad(StringBuilder sb, int pads)
         {
             for(int i=0; i<pads; ++i)
             {
-                sb.Append("-");
+                sb.Append("    ");
             }
         }
     }

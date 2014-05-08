@@ -1,4 +1,4 @@
-﻿namespace Ancestry.Daisy.Tests.Daisy.Unit.Language
+namespace Ancestry.Daisy.Tests.Daisy.Unit.Language
 {
     using System;
 
@@ -11,46 +11,119 @@
     [TestFixture,Category("Unit")]
     public class DaisyParserTest
     {
-        [TestCase("a\nAND b","AND\r\n-a\r\n-b\r\n",TestName = "It parses ands")]
-        [TestCase("a\nOR b","OR\r\n-a\r\n-b\r\n",TestName = "It parses ors")]
-        [TestCase("a\nOR NOT b","OR\r\n-a\r\n-NOT\r\n--b\r\n",TestName = "It parses nots")]
-        [TestCase("a\nNOT b","AND\r\n-a\r\n-NOT\r\n--b\r\n",TestName = "It parses nots after implicit ands")]
-        [TestCase("a\nb","AND\r\n-a\r\n-b\r\n",TestName = "It parses implicit ands")]
-        [TestCase("a\nAND b\nAND c","AND\r\n-AND\r\n--a\r\n--b\r\n-c\r\n",TestName = "It parses chained statements")]
+        [TestCase("a\nAND b",
+@"(AND
+    a
+    b)",TestName = "It parses ands")]
+        [TestCase("a\nOR b",
+@"(OR
+    a
+    b)",TestName = "It parses ors")]
+        [TestCase("a\nOR NOT b",
+@"(OR
+    a
+    (NOT b))",TestName = "It parses nots")]
+        [TestCase("a\nNOT b",
+@"(AND
+    a
+    (NOT b))",TestName = "It parses nots after implicit ands")]
+        [TestCase("a\nb",
+@"(AND
+    a
+    b)",TestName = "It parses implicit ands")]
+        [TestCase("a\nAND b\nAND c",
+@"(AND
+    (AND
+        a
+        b)
+    c)",TestName = "It parses chained statements")]
         [TestCase(
 @"a
 AND b
 AND c
 OR NOT d
 AND NOT e",
-            "AND\r\n-OR\r\n--AND\r\n---AND\r\n----a\r\n----b\r\n---c\r\n--NOT\r\n---d\r\n-NOT\r\n--e\r\n",
+@"(AND
+    (OR
+        (AND
+            (AND
+                a
+                b)
+            c)
+        (NOT d))
+    (NOT e))",
             TestName = "It parses deeply chained statements")]
         [TestCase(
 @"a
 AND
   b
   OR c",
-            "AND\r\n-a\r\n-GROUP\r\n--OR\r\n---b\r\n---c\r\n",
+@"(AND
+    a
+    (GROUP
+        (OR
+            b
+            c)))",
             TestName = "It parses anonymous groups")]
         [TestCase(
 @"a
 AND d
   b
   OR c",
-            "AND\r\n-a\r\n-GROUP@d\r\n--OR\r\n---b\r\n---c\r\n",
+@"(AND
+    a
+    (GROUP d
+        (OR
+            b
+            c)))",
             TestName = "It parses named groups")]
         [TestCase(
 @"a
   b",
-            "GROUP@a\r\n-b\r\n",
+@"(GROUP a
+    b)",
             TestName = "It parses groups")]
         [TestCase( @"
 a
   b
     c
     d",
-            "GROUP@a\r\n-GROUP@b\r\n--AND\r\n---c\r\n---d\r\n",
+@"(GROUP a
+    (GROUP b
+        (AND
+            c
+            d)))",
             TestName = "It parses groups in groups")]
+        [TestCase(
+@"a
+OR b
+OR
+  c
+    ca
+    cb
+    cc
+  d
+  NOT e
+AND f",
+
+@"(AND
+    (OR
+        (OR
+            a
+            b)
+        (GROUP
+            (AND
+                (AND
+                    (GROUP c
+                        (AND
+                            (AND
+                                ca
+                                cb)
+                            cc))
+                    d)
+                (NOT e))))
+    f)", 
+       TestName="New AST")]
         public void ItParsesLanguages(string code, string expectedTree)
         {
             var llstream = new LookAheadStream<Token>(new Lexer(code.ToStream()).Lex());
@@ -79,7 +152,7 @@ a
             {
                 parser.Parse();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //throw;
                 return;

@@ -8,9 +8,15 @@
     [TestFixture,Category("Unit")]
     public class DaisyAstPrinterTests
     {
-        [TestCase("a\r\nAND b", Result = "AND\r\n-a\r\n-b\r\n")]
-        [TestCase("a\r\nOR b", Result = "OR\r\n-a\r\n-b\r\n")]
-        [TestCase("NOT a", Result = "NOT\r\n-a\r\n")]
+        [TestCase("a\r\nAND b", Result = 
+@"(AND
+    a
+    b)")]
+        [TestCase("a\r\nOR b", Result = 
+@"(OR
+    a
+    b)")]
+        [TestCase("NOT a", Result = "(NOT a)")]
         public string ItPrintsPrograms(string code)
         {
             var ast = DaisyParser.Parse(code);
