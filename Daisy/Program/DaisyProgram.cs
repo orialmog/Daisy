@@ -71,31 +71,24 @@ namespace Ancestry.Daisy.Program
             else if(node is GroupOperatorNode)
             {
                 var group = node as GroupOperatorNode;
-                if (group.HasCommand)
-                {
-                    var link = group.LinkedStatement;
-                    if (link == null) throw new DaisyRuntimeException(string.Format("Group '{0}' was never linked", group.Text));
-                    var frames = new List<TraceNode>();
-                    var tracer = BuildTracer();
-                    var result =  link.Execute(new InvokationContext() {
-                        Scope = scope,
-                        Proceed = o =>
-                        {
-                            var frame = Execute(o, @group.Root, daisyExecution, context);
-                            frames.Add(frame);
-                            return frame.Outcome;
-                        },
-                        Context = context,
-                        Attachments = daisyExecution.Attachments,
-                        Tracer = tracer,
-                        PerformanceCounter = daisyExecution.DebugInfo.PerformanceCounter
-                    });
-                    return new GroupOperatorTrace(group.Text, tracer.Tracings, frames,scope, result);
-                } else
-                {
-                    var trace = Execute(scope, @group.Root, daisyExecution, context);
-                    return trace;
-                }
+                var link = group.LinkedStatement;
+                if (link == null) throw new DaisyRuntimeException(string.Format("Group '{0}' was never linked", group.Text));
+                var frames = new List<TraceNode>();
+                var tracer = BuildTracer();
+                var result =  link.Execute(new InvokationContext() {
+                    Scope = scope,
+                    Proceed = o =>
+                    {
+                        var frame = Execute(o, @group.Root, daisyExecution, context);
+                        frames.Add(frame);
+                        return frame.Outcome;
+                    },
+                    Context = context,
+                    Attachments = daisyExecution.Attachments,
+                    Tracer = tracer,
+                    PerformanceCounter = daisyExecution.DebugInfo.PerformanceCounter
+                });
+                return new GroupOperatorTrace(group.Text, tracer.Tracings, frames,scope, result);
             }
             else if(node is StatementNode)
             {

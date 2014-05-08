@@ -1,4 +1,4 @@
-namespace Ancestry.Daisy.Tests.Daisy.Unit.Language
+﻿namespace Ancestry.Daisy.Tests.Daisy.Unit.Language
 {
     using System;
 
@@ -60,10 +60,9 @@ AND
   OR c",
 @"(AND
     a
-    (GROUP
-        (OR
-            b
-            c)))",
+    (OR
+        b
+        c))",
             TestName = "It parses anonymous groups")]
         [TestCase(
 @"a
@@ -111,17 +110,16 @@ AND f",
         (OR
             a
             b)
-        (GROUP
+        (AND
             (AND
-                (AND
-                    (GROUP c
+                (GROUP c
+                    (AND
                         (AND
-                            (AND
-                                ca
-                                cb)
-                            cc))
-                    d)
-                (NOT e))))
+                            ca
+                            cb)
+                        cc))
+                d)
+            (NOT e)))
     f)", 
        TestName="New AST")]
         public void ItParsesLanguages(string code, string expectedTree)

@@ -73,11 +73,13 @@ namespace Ancestry.Daisy.Language
         }
 
 
-        private GroupOperatorNode ParseGroup(StatementNode head)
+        private IDaisyAstNode ParseGroup(StatementNode head)
         {
             Consume(TokenKind.StartGroup);
             var groupInner = ParseExpression();
             Consume(TokenKind.EndGroup);
+            if (head == null || head.Text == null)
+                return groupInner;
             return new GroupOperatorNode(head.With(x => head.Text),
                 groupInner);
         }
