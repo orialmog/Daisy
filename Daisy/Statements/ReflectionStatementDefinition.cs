@@ -25,7 +25,7 @@ namespace Ancestry.Daisy.Statements
             private readonly Match match;
             private bool transformsToValueType;
 
-            private object[] mappedParameters;
+            public object[] MappedParameters { get; private set; }
 
             private object proceedHolder = new object(); //This object is placed into the parameters array as a
               // place holder for the proceed function. It should be swapped out when the proceed function is
@@ -85,7 +85,7 @@ namespace Ancestry.Daisy.Statements
                         + "It used {0} but {1} are available.",
                         ptrGroups-1, match.Groups.Count -1, definition.Name));
                 }
-                mappedParameters = objs.ToArray();
+                MappedParameters = objs.ToArray();
             }
 
             protected object Cast(string obj, StatementParameter param)
@@ -126,8 +126,8 @@ namespace Ancestry.Daisy.Statements
                 var controllerInstance = CreateController();
                 InitializeController(controllerInstance,context);
                 var methodParams = Definition.TransformsScopeTo == null ?
-                    mappedParameters :
-                    mappedParameters.Select(x => x == proceedHolder ?  transformsToValueType ? scopeConverter(context.Proceed) : context.Proceed : x)
+                    MappedParameters :
+                    MappedParameters.Select(x => x == proceedHolder ?  transformsToValueType ? scopeConverter(context.Proceed) : context.Proceed : x)
                     .ToArray();
                 context.PerformanceCounter.Count(context,definition);
                 return Execute(controllerInstance, methodParams);

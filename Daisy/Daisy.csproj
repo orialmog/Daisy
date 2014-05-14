@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DaisyCodeCompiler.cs" />
     <Compile Include="DaisyCompiler.cs" />
     <Compile Include="Language\AST\Trace\AndOperatorTrace.cs" />
     <Compile Include="Language\AST\Trace\GroupOperatorTrace.cs" />
