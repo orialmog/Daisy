@@ -1,43 +1,32 @@
-﻿using Ancestry.Daisy.Language;
-using Ancestry.Daisy.Linking;
-using Ancestry.Daisy.Program;
-using Ancestry.Daisy.Statements;
-using Microsoft.CSharp;
+﻿
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Fasterflect;
 using Ancestry.Daisy.Language.AST;
+using Ancestry.Daisy.Statements;
+using Ancestry.Daisy.Language;
 
-namespace Ancestry.Daisy
+namespace Ancestry.Daisy.Compilation
 {
-    public class DaisyCodeCompiler
+    public class DaisyCodeGenerator
     {
-        public static Func<T, ContextBundle, DaisyCompiledExecution> Compile<T>(string code, StatementSet statements)
-        {
-            var ast = DaisyParser.Parse(code);
-            var linker = new DaisyLinker(ast, statements, typeof(T));
-            linker.Link();
-            return Compile<T>(ast, statements);
-        }
-
-        public static Func<T, ContextBundle, DaisyCompiledExecution> Compile<T>(DaisyAst ast, StatementSet statements)
+        public static string Generate<T>(DaisyAst ast, StatementSet statements)
         {
             var sb = new StringBuilder();
             sb.Append(
 @"using Ancestry.Daisy;
+using Ancestry.Daisy.Compilation;
 using Ancestry.Daisy.Program;
 
 namespace Thing
 {
     public class Program
     {
-        public static DaisyCompiledExecution Prg(");
+        public static IDaisyExecution Prg(");
             sb.Append(typeof(T).FullName);
             sb.Append(@" scope, ContextBundle context)
 {           
@@ -47,7 +36,7 @@ namespace Thing
             Walk(sb, ast.Root, 0);
 
             sb.Append(@";
-            return new DaisyCompiledExecution
+            return new DaisyExecution(null, DaisyMode.Release)
             {
                 Attachments = attachments,
                 Outcome = result
@@ -55,10 +44,7 @@ namespace Thing
         }
     }
 }");
-            var compiled = Compile(sb.ToString(), statements);
-            var dlg = compiled.DelegateForCallMethod("Prg", new[] { typeof(T), typeof(ContextBundle)});
-            return (scope, context) => (DaisyCompiledExecution)dlg(null, new object[] { scope, context });
-                       
+            return sb.ToString();
         }
         private static void Walk(StringBuilder sb, IDaisyAstNode node, int groupDepth)
         {
@@ -156,44 +142,11 @@ namespace Thing
             }
             else
             {
-                throw new Exception("invalid ast node type");
+                throw new DaisyCompilationException("Cannot compile ast  -- invalid node type");
             }
             
         }
-        private static Type Compile(string code, StatementSet set)
-        {
-            var csp = new CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v4.0" } });
-            var libPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().EscapedCodeBase).Substring(6);
-            var parameters = new CompilerParameters(new[] {
-                    "mscorlib.dll",
-                    "System.Core.dll",
-                    "Ancestry.Daisy.dll",
-                    "System.dll"
-                }.Concat(set.Statements
-                        .OfType<ReflectionStatementDefinition>()
-                        .SelectMany(i => new[]{
-                                Path.GetFileName(i.ControllerType.Assembly.EscapedCodeBase),
-                                Path.GetFileName(i.ScopeType.Assembly.EscapedCodeBase)
-                            }))
-                    .Distinct()
-                    .ToArray())
-            {
-                GenerateInMemory = true,
-                CompilerOptions = string.Format("/lib:{0}", libPath)
-            };
-            var results = csp.CompileAssemblyFromSource(parameters, code);
-            if (results.Errors.HasErrors)
-            {
-                throw new AggregateException(results.Errors.OfType<CompilerError>().Select(x => new Exception(x.ToString())));
-            }
-            return results.CompiledAssembly.GetType("Thing.Program");
-        }
-    }
-
-    public class DaisyCompiledExecution
-    {
-        public bool Outcome { get; set; }
-        public ContextBundle Attachments { get; set; }
+       
     }
 }
 

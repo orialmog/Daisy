@@ -11,7 +11,8 @@ namespace Ancestry.Daisy.Statements
 
         public void Trace(string pattern, params object[] templateValues)
         {
-            //Tracer.Trace(pattern,templateValues);
+            if(Tracer != null)
+                Tracer.Trace(pattern,templateValues);
         }
     }
 }

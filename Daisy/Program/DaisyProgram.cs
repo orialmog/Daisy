@@ -10,14 +10,12 @@ namespace Ancestry.Daisy.Program
     using Ancestry.Daisy.Linking;
     using Ancestry.Daisy.Statements;
 
-    public class DaisyProgram<T>
+    public class DaisyProgram<T> : IDaisyProgram<T>
     {
-        public DaisyMode Mode { get; private set; }
         private readonly DaisyAst ast;
 
-        public DaisyProgram(DaisyAst ast, DaisyMode mode)
+        public DaisyProgram(DaisyAst ast)
         {
-            Mode = mode;
             this.ast = ast;
         }
 
@@ -28,7 +26,7 @@ namespace Ancestry.Daisy.Program
 
         public IDaisyExecution Execute(T scope, ContextBundle context)
         {
-            var execution = new DaisyExecution(ast, Mode);
+            var execution = new DaisyExecution(ast, DaisyMode.Debug);
             execution.DebugInfo.PerformanceCounter.Start();
             var traced = Execute(scope, ast.Root, execution, context);
             execution.Outcome = traced.Outcome;
@@ -39,8 +37,7 @@ namespace Ancestry.Daisy.Program
 
         private ITracer BuildTracer()
         {
-            if(Mode == DaisyMode.Debug) return new Tracer();
-            return new NoOpTracer();
+            return new Tracer();
         }
 
         private TraceNode Execute(object scope, IDaisyAstNode node, DaisyExecution daisyExecution, ContextBundle context)

@@ -19,7 +19,7 @@
             return Scope.Accounts.Any(procced);
         }
 
-        public bool IsActive(         )
+        public bool IsActive()
         {
             return Scope.IsActive;
         }

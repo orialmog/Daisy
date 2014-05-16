@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DaisyCodeCompiler.cs" />
+    <Compile Include="Language\Compilation\DaisyCodeGenerator.cs" />
     <Compile Include="DaisyCompiler.cs" />
     <Compile Include="Language\AST\Trace\AndOperatorTrace.cs" />
     <Compile Include="Language\AST\Trace\GroupOperatorTrace.cs" />
@@ -56,6 +56,8 @@
     <Compile Include="Language\Walks\DaisyTracePrinter.cs" />
     <Compile Include="Language\WhitespaceEater.cs" />
     <Compile Include="Program\ContextBundle.cs" />
+    <Compile Include="Language\Compilation\DaisyCompilationException.cs" />
+    <Compile Include="Program\DaisyCompiledProgram.cs" />
     <Compile Include="Program\DaisyRuntimeException.cs" />
     <Compile Include="Program\DaisyProgram.cs" />
     <Compile Include="Linking\DaisyLinker.cs" />
@@ -75,6 +77,7 @@
     <Compile Include="Program\ExecutionDebugInfo.cs" />
     <Compile Include="Program\DaisyExecution.cs" />
     <Compile Include="Program\ExecutionResultType.cs" />
+    <Compile Include="Program\IDaisyProgram.cs" />
     <Compile Include="Program\PerformanceCounter.cs" />
     <Compile Include="Program\Tracer.cs" />
     <Compile Include="Statements\StatementParameter.cs" />
@@ -99,6 +102,7 @@
     <Compile Include="Utils\StringExtentions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="daisy.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

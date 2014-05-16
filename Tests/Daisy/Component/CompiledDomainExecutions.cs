@@ -8,9 +8,10 @@ namespace Ancestry.Daisy.Tests.Daisy.Component
     using Ancestry.Daisy.Tests.Daisy.Component.Domain;
 
     using NUnit.Framework;
+    using Ancestry.Daisy.Program;
 
     [TestFixture, Category("Component")]
-    public class DomainExecutions
+    public class CompiledDomainExecutions
     {
         private StatementSet statements;
 
@@ -39,8 +40,7 @@ namespace Ancestry.Daisy.Tests.Daisy.Component
         [TestCaseSource("itExecutesStatments")]
         public bool ItExecutesStatements(string code, User data)
         {
-            var execution = DaisyCompiler.Compile<User>(code, statements).Execute(data);
-            Console.WriteLine(new DaisyTracePrinter(execution.DebugInfo.Trace).Print());
+            var execution = DaisyCompiler.Compile<User>(code, statements, DaisyMode.Release).Execute(data, new ContextBundle());
             return execution.Outcome;
         }
     }

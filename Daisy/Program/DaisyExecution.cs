@@ -17,13 +17,13 @@ namespace Ancestry.Daisy.Program
 
     public class DaisyExecution : IDaisyExecution
     {
-        public bool Outcome { get; internal set; }
+        public bool Outcome { get; set; }
 
-        public ExecutionDebugInfo DebugInfo { get; private set; }
+        public ExecutionDebugInfo DebugInfo { get; set; }
 
-        public ContextBundle Attachments { get; private set; }
+        public ContextBundle Attachments { get; set; }
 
-        internal DaisyExecution(DaisyAst ast, DaisyMode mode)
+        public DaisyExecution(DaisyAst ast, DaisyMode mode)
         {
             Attachments = new ContextBundle();
             DebugInfo = new ExecutionDebugInfo(ast,mode);
