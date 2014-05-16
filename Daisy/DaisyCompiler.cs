@@ -16,6 +16,7 @@ namespace Ancestry.Daisy
     using System.Reflection;
     using System.CodeDom.Compiler;
     using Ancestry.Daisy.Compilation;
+    using Ancestry.Daisy.Language.Compilation;
 
     public class DaisyCompiler
     {
@@ -27,10 +28,17 @@ namespace Ancestry.Daisy
             if(mode == DaisyMode.Debug)
                 return new DaisyProgram<T>(ast);
 
+            var cached = DaisyProgramCache.Get<T>(code);
+            if (cached != null)
+                return cached;
+
             var csharpcode = DaisyCodeGenerator.Generate<T>(ast, statements);
             var compiled = Compile(csharpcode, statements);
             var dlg = compiled.DelegateForCallMethod("Prg", new[] { typeof(T), typeof(ContextBundle) });
-            return new DaisyCompiledProgram<T>((scope, context) => (IDaisyExecution)dlg(null, new object[] { scope, context }));
+            var prog = new DaisyCompiledProgram<T>((scope, context) => (IDaisyExecution)dlg(null, new object[] { scope, context }));
+
+            DaisyProgramCache.Stash(code, prog);
+            return prog;
         }
         private static Type Compile(string code, StatementSet set)
         {

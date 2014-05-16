@@ -9,6 +9,8 @@ namespace Ancestry.Daisy.Tests.Daisy.Component
 
     using NUnit.Framework;
     using Ancestry.Daisy.Program;
+    using System.Diagnostics;
+    using Ancestry.Daisy.Language.Compilation;
 
     [TestFixture, Category("Component")]
     public class CompiledDomainExecutions
@@ -26,9 +28,7 @@ namespace Ancestry.Daisy.Tests.Daisy.Component
                 new TestCaseData(Statements.UserHasNoRecentTransactions, TestData.Ben)
                 .Returns(false)
                 .SetName("Has no recent transaction"),
-                new TestCaseData(Statements.UserIsOverdrawnOnChecking, TestData.Ben)
-                .Returns(true)
-                .SetName("Is overdrawn on checking"),
+                
                 new TestCaseData(Statements.UserHasUnusedMoneyMarket, TestData.Ben)
                 .Returns(true)
                 .SetName("Has unused money market account"),
@@ -42,6 +42,24 @@ namespace Ancestry.Daisy.Tests.Daisy.Component
         {
             var execution = DaisyCompiler.Compile<User>(code, statements, DaisyMode.Release).Execute(data, new ContextBundle());
             return execution.Outcome;
+        }
+        [Test]
+        public void ItCachesCompiledPrograms()
+        {
+            Assert.IsNull(DaisyProgramCache.Get<User>(Statements.UserIsOverdrawnOnChecking));
+            var foo = DaisyCompiler.Compile<User>(Statements.UserIsOverdrawnOnChecking, 
+                statements,
+                DaisyMode.Debug);
+            Assert.IsNull(DaisyProgramCache.Get<User>(Statements.UserIsOverdrawnOnChecking));
+            var prog = DaisyCompiler.Compile<User>(Statements.UserIsOverdrawnOnChecking, 
+                statements,
+                DaisyMode.Release);
+            Assert.IsNotNull(DaisyProgramCache.Get<User>(Statements.UserIsOverdrawnOnChecking));
+            Assert.AreNotEqual(foo, prog);
+            var prog2 = DaisyCompiler.Compile<User>(Statements.UserIsOverdrawnOnChecking,
+                statements,
+                DaisyMode.Release);
+            Assert.AreEqual(prog, prog2);
         }
     }
 }

@@ -52,6 +52,7 @@
     <Compile Include="Language\AST\Trace\NotOperatorTrace.cs" />
     <Compile Include="Language\AST\Trace\OrOperatorTrace.cs" />
     <Compile Include="Language\AST\Trace\StatementTrace.cs" />
+    <Compile Include="Language\Compilation\DaisyProgramCache.cs" />
     <Compile Include="Language\InconsistentWhitespaceException.cs" />
     <Compile Include="Language\Walks\DaisyTracePrinter.cs" />
     <Compile Include="Language\WhitespaceEater.cs" />
