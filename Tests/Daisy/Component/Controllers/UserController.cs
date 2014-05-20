@@ -8,12 +8,21 @@
 
     public class UserController : StatementController<User>
     {
-        public bool HasAccount(Func<Account,bool> procced)
+        [Matches(@"Has\s+Account(?:\s*=>\s*(.*))?")]
+        public bool HasAccount(Func<Account, bool> proceed, string name = null)
         {
             Trace("Has {0} accounts", Scope.Accounts.Count);
-            return Scope.Accounts.Any(procced);
+            foreach (var entry in Scope.Accounts)
+            {
+                if (proceed(entry))
+                {
+                    if(name != null)
+                        this.Attachments[name] = entry;
+                    return true;
+                }
+            }
+            return false;
         }
-
         public bool AllAccounts(Func<Account,bool> procced)
         {
             return Scope.Accounts.Any(procced);

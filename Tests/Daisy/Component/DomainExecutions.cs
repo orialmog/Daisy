@@ -34,7 +34,14 @@ namespace Ancestry.Daisy.Tests.Daisy.Component
                 new TestCaseData(Statements.UserHasNonCheckingWithABalance, TestData.Ben)
                 .Returns(true)
                 .SetName("Has non checking account with a balance"),
+                new TestCaseData(Statements.AttachmentsInChildfulGroup, TestData.Ben)
+                .Returns(true)
+                .SetName("Attaches with group that has children"),
+                new TestCaseData(Statements.AttachmentsInChildlessGroup, TestData.Ben)
+                .Returns(true)
+                .SetName("Attaches with group without children"),
             };
+
 
         [TestCaseSource("itExecutesStatments")]
         public bool ItExecutesStatements(string code, User data)

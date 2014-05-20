@@ -10,9 +10,19 @@ namespace Ancestry.Daisy.Tests.Daisy.Component.Controllers
 
     public class AccountController : StatementController<Account>
     {
-        public bool HasTransaction(Func<Transaction,bool> proceed)
+        [Matches(@"Has\s+Transaction(?:\s*=>\s*(.*))?")]
+        public bool HasTransaction(Func<Transaction, bool> proceed, string name = null)
         {
-            return Scope.Transactions.Any(proceed);
+            foreach (var entry in Scope.Transactions)
+            {
+                if (proceed(entry))
+                {
+                    if(name != null)
+                        this.Attachments[name] = entry;
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

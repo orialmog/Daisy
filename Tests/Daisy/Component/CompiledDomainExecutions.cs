@@ -25,23 +25,30 @@ namespace Ancestry.Daisy.Tests.Daisy.Component
 
         private TestCaseData[] itExecutesStatments =
             {
-                new TestCaseData(Statements.UserHasNoRecentTransactions, TestData.Ben)
+                new TestCaseData(Statements.UserHasNoRecentTransactions, TestData.Ben, false)
                 .Returns(false)
                 .SetName("Has no recent transaction"),
-                
-                new TestCaseData(Statements.UserHasUnusedMoneyMarket, TestData.Ben)
+                new TestCaseData(Statements.UserHasUnusedMoneyMarket, TestData.Ben, false)
                 .Returns(true)
                 .SetName("Has unused money market account"),
-                new TestCaseData(Statements.UserHasNonCheckingWithABalance, TestData.Ben)
+                new TestCaseData(Statements.UserHasNonCheckingWithABalance, TestData.Ben, false)
                 .Returns(true)
                 .SetName("Has non checking account with a balance"),
+                new TestCaseData(Statements.AttachmentsInChildfulGroup, TestData.Ben, true)
+                .Returns(true)
+                .SetName("Attaches with group that has children"),
+                new TestCaseData(Statements.AttachmentsInChildlessGroup, TestData.Ben, true)
+                .Returns(true)
+                .SetName("Attaches with group without children"),
             };
 
         [TestCaseSource("itExecutesStatments")]
-        public bool ItExecutesStatements(string code, User data)
+        public bool ItExecutesStatements(string code, User data, bool hasAttachments)
         {
             var execution = DaisyCompiler.Compile<User>(code, statements, DaisyMode.Release).Execute(data, new ContextBundle());
-            return execution.Outcome;
+            return execution.Outcome && (hasAttachments 
+                ? execution.Attachments.Count > 0
+                : execution.Attachments.Count == 0);
         }
         [Test]
         public void ItCachesCompiledPrograms()

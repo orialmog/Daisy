@@ -67,6 +67,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="Daisy\Component\CompiledDomainExecutions.cs" />
     <Compile Include="Daisy\Component\Controllers\AccountController.cs" />
     <Compile Include="Daisy\Component\Controllers\TransactionController.cs" />
@@ -193,6 +194,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ExampleCommentsDocumentation.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UserHasUsedAccount.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UserHasUsedAccount1.txt" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

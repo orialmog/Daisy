@@ -103,7 +103,15 @@ namespace Thing
                 sb.Append(@" => 
 ");
                 Walk(sb, casted.Root, groupDepth);
-
+                if (castedStatement.MappedParameters.Skip(1).Any())
+                    sb.Append(", ");
+                sb.Append(string.Join(", ", castedStatement.MappedParameters.Skip(1)
+                    .Select(i =>
+                    {
+                        if (i == null)
+                            return "null";
+                        return i.GetType() == typeof(string) ? string.Join(i.ToString(), "\"", "\"") : i.ToString();
+                    })));
                 sb.Append(")");
             }
             else if(node is StatementNode)
@@ -126,18 +134,21 @@ namespace Thing
                 sb.Append(castedStatement.Definition.Name);
                 sb.Append("(");
 
-                var hasProceedFunc = castedStatement.MappedParameters.Length == 1
-                    && castedStatement.MappedParameters.Where(i => new[] { typeof(string), typeof(int) }.Contains(i.GetType())).Count() == 0;
-                if(hasProceedFunc)
+                var proceedFunc = castedStatement.MappedParameters
+                    .Select((i,c) => Tuple.Create(i,c))
+                    .FirstOrDefault(i => i.Item1.GetType() == typeof(object));
+
+                if(proceedFunc != null)
                 {
-                    sb.Append("foobidylols => true");
+                    castedStatement.MappedParameters[proceedFunc.Item2] = new FakeString("foobidylols => true");
                 }
-                else
-                {
-                    sb.Append(string.Join(", ", castedStatement.MappedParameters
-                        .Where(i => new[] { typeof(string), typeof(int) }.Contains(i.GetType()))
-                        .Select(i => i.GetType() == typeof(string) ? string.Join(i.ToString(), "\"", "\"") : i.ToString())));
-                }
+                sb.Append(string.Join(", ", castedStatement.MappedParameters
+                    .Select(i => 
+                        {
+                            if(i == null)
+                                return "null";
+                            return i.GetType() == typeof(string) ? string.Join(i.ToString(), "\"", "\"") : i.ToString();
+                        })));
                 sb.Append(")");
             }
             else
@@ -145,6 +156,18 @@ namespace Thing
                 throw new DaisyCompilationException("Cannot compile ast  -- invalid node type");
             }
             
+        }
+        private class FakeString
+        {
+            public string thing;
+            public FakeString(string foo)
+            {
+                this.thing = foo;
+            }
+            public override string ToString()
+            {
+                return thing;
+            }
         }
        
     }

@@ -136,4 +136,10 @@
   <data name="DoubleGroupEndings" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\Resources\DoubleGroupEndings.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="AttachmentsInChildfulGroup" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Resources\UserHasUsedAccount1.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="AttachmentsInChildlessGroup" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Resources\UserHasUsedAccount.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;iso-8859-1</value>
+  </data>
 </root>

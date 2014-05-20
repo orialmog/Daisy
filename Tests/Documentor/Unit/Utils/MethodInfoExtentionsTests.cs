@@ -17,7 +17,7 @@ namespace Ancestry.Daisy.Tests.Documentor.Unit.Utils
         [TestCase(typeof(AccountController),"Type", Result = "Ancestry.Daisy.Tests.Daisy.Component.Controllers.AccountController.Type(System.String)")]
         [TestCase(typeof(AccountController), "IsBalanced", Result = "Ancestry.Daisy.Tests.Daisy.Component.Controllers.AccountController.IsBalanced")]
         [TestCase(typeof(AccountController), "BalanceBetween", Result = "Ancestry.Daisy.Tests.Daisy.Component.Controllers.AccountController.BalanceBetween(System.Int32,System.Int32)")]
-        [TestCase(typeof(AccountController), "HasTransaction", Result = "Ancestry.Daisy.Tests.Daisy.Component.Controllers.AccountController.HasTransaction(System.Func{Ancestry.Daisy.Tests.Daisy.Component.Domain.Transaction,System.Boolean})")]
+        [TestCase(typeof(AccountController), "HasTransaction", Result = "Ancestry.Daisy.Tests.Daisy.Component.Controllers.AccountController.HasTransaction(System.Func{Ancestry.Daisy.Tests.Daisy.Component.Domain.Transaction,System.Boolean},System.String)")]
         public string ItGetsSignatures(Type clas,string methodName)
         {
             return clas.GetMethod(methodName).GetDocStyleSignature();
