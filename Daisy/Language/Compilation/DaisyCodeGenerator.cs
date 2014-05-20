@@ -136,7 +136,7 @@ namespace Thing
 
                 var proceedFunc = castedStatement.MappedParameters
                     .Select((i,c) => Tuple.Create(i,c))
-                    .FirstOrDefault(i => i.Item1.GetType() == typeof(object));
+                    .FirstOrDefault(i => i.Item1 != null && i.Item1.GetType() == typeof(object));
 
                 if(proceedFunc != null)
                 {

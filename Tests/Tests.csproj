@@ -67,7 +67,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Daisy\Component\CompiledDomainExecutions.cs" />
     <Compile Include="Daisy\Component\Controllers\AccountController.cs" />
     <Compile Include="Daisy\Component\Controllers\TransactionController.cs" />
